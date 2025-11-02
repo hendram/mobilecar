@@ -1,0 +1,30 @@
+/* Portrait-style full screen map (for mobile-like layout) */
+.map-container {
+  width: 100vw;
+  height: 100vh;
+  max-width: 480px;     /* Simulate phone width */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+.map-container > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ddd;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 18px;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+}
