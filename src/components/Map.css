@@ -28,3 +28,30 @@
   height: 100vh;
   background: #000;
 }
+
+.car-select-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.car-select-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.car-select-box select,
+.car-select-box button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+}

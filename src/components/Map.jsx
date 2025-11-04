@@ -7,9 +7,9 @@ const libraries = ["geometry", "marker"];
 const containerStyle = { width: "100%", height: "100%" };
 const center = { lat: -6.2, lng: 106.816666 };
 const MAP_ID = "2b8757efac2172e4321a3e69";
+const API_URL = "http://localhost:3001";
 
 let newTrip = false;
-const API_URL = "http://localhost:3001";
 
 export default function Map() {
   const { isLoaded } = useJsApiLoader({
@@ -20,35 +20,47 @@ export default function Map() {
   const mapRef = useRef(null);
   const carRef = useRef(null);
   const [path, setPath] = useState([]);
+  const [cars, setCars] = useState([]);
+  const [selectedCar, setSelectedCar] = useState(sessionStorage.getItem("selectedCarId") || "");
+  const [showSelect, setShowSelect] = useState(!selectedCar);
 
-useEffect(() => {
-  const carId = sessionStorage.getItem("selectedCarId")  || "car1";
-  if (!carId) return; // user must select car first
-
-  const tripKey = `tripStarted_${carId}`;
-  const hasStarted = sessionStorage.getItem(tripKey);
-
-  if (!hasStarted) {
-    fetch(`${API_URL}/startTrip`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ carId, startTime: new Date().toISOString() }),
-    }).catch(console.error);
-
-    sessionStorage.setItem(tripKey, "true");
-  }
-}, []);
-
+  // --- Load car list once ---
   useEffect(() => {
-    const carId = sessionStorage.getItem("selectedCarId") || "car1";
+    fetch(`${API_URL}/listcars`)
+      .then((res) => res.json())
+      .then((data) => setCars(data))
+      .catch(console.error);
+  }, []);
 
-    fetch(`${API_URL}/getcarroute?carId=${carId}`)
+  // --- Handle trip start ---
+  const handleStartTrip = () => {
+    if (!selectedCar) return alert("Please select a car");
+
+    sessionStorage.setItem("selectedCarId", selectedCar);
+    const tripKey = `tripStarted_${selectedCar}`;
+
+    if (!sessionStorage.getItem(tripKey)) {
+      fetch(`${API_URL}/startTrip`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ carId: selectedCar, startTime: new Date().toISOString() }),
+      }).catch(console.error);
+      sessionStorage.setItem(tripKey, "true");
+    }
+
+    setShowSelect(false);
+  };
+
+  // --- Fetch route once car selected ---
+  useEffect(() => {
+    if (!selectedCar) return;
+    fetch(`${API_URL}/getcarroute?carId=${selectedCar}`)
       .then((res) => res.json())
       .then((data) => setPath(data))
       .catch((err) => console.error("Error fetching route:", err));
-  }, []);
+  }, [selectedCar]);
 
-  // --- rest of your Map.jsx logic (car movement) stays exactly the same ---
+  // --- Car movement simulation ---
   useEffect(() => {
     if (!isLoaded || !mapRef.current || !path || path.length < 2) return;
 
@@ -101,16 +113,11 @@ useEffect(() => {
 
       const startLatLng = new window.google.maps.LatLng(start.lat, start.lng);
       const endLatLng = new window.google.maps.LatLng(end.lat, end.lng);
-
       const distance =
-        window.google.maps.geometry.spherical.computeDistanceBetween(
-          startLatLng,
-          endLatLng
-        );
+        window.google.maps.geometry.spherical.computeDistanceBetween(startLatLng, endLatLng);
 
       const step = (car.speed || 2) / (distance || 1);
       car.fraction += step;
-
       if (car.fraction >= 1) {
         car.fraction = 0;
         car.index = (car.index + 1) % car.path.length;
@@ -121,22 +128,18 @@ useEffect(() => {
       const position = { lat, lng };
 
       const heading =
-        window.google.maps.geometry.spherical.computeHeading(startLatLng, endLatLng) +
-        90;
+        window.google.maps.geometry.spherical.computeHeading(startLatLng, endLatLng) + 90;
 
       car.marker.position = position;
       car.carEl.style.transform = `translate(-50%, -50%) rotate(${heading}deg)`;
 
-     const carId = sessionStorage.getItem("selectedCarId") || "car1";
-     const tripcurpos = `tripCurpos_${carId}`;
-     if (!sessionStorage.getItem("tripcurpos")) { 
-        newTrip = true; 
-         sessionStorage.setItem("tripcurpos", "true"); 
-        console.log("🆕 New trip started — will create new Firestore collection"); 
-         } 
-     else { 
-        newTrip = false; 
-        }
+      const carId = sessionStorage.getItem("selectedCarId");
+      const tripcurpos = `tripCurpos_${carId}`;
+      if (!sessionStorage.getItem("tripcurpos")) {
+        newTrip = true;
+        sessionStorage.setItem("tripcurpos", "true");
+        console.log("🆕 New trip started — will create new Firestore collection");
+      } else newTrip = false;
 
       const now = Date.now();
       const shouldSendNow = !car.lastSent || now - car.lastSent > 5000;
@@ -145,12 +148,7 @@ useEffect(() => {
         fetch(`${API_URL}/carcurpos`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            carId,
-            lat,
-            lng,
-            newTrip,
-          }),
+          body: JSON.stringify({ carId, lat, lng, newTrip }),
         }).catch(() => {});
         newTrip = false;
       }
@@ -164,6 +162,7 @@ useEffect(() => {
 
   return (
     <div className="map-container">
+      {/* Map underneath */}
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
@@ -171,6 +170,27 @@ useEffect(() => {
         options={{ mapId: MAP_ID }}
         onLoad={(map) => (mapRef.current = map)}
       />
+
+      {/* Car selection overlay */}
+      {showSelect && (
+        <div className="car-select-overlay">
+          <div className="car-select-box">
+            <h2>Select your car</h2>
+            <select
+              value={selectedCar}
+              onChange={(e) => setSelectedCar(e.target.value)}
+            >
+              <option value="">-- Choose a car --</option>
+              {cars.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.id}
+                </option>
+              ))}
+            </select>
+            <button onClick={handleStartTrip}>Start Trip</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
