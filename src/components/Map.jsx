@@ -104,7 +104,7 @@ export default function Map() {
     };
     randomizeBehavior();
 
-    const moveCar = () => {
+  const moveCar = () => {
       const car = carRef.current;
       if (!car || car.paused) return;
       const start = car.path[car.index];
@@ -153,6 +153,7 @@ export default function Map() {
         newTrip = false;
       }
     };
+
 
     const interval = setInterval(moveCar, 200);
     return () => clearInterval(interval);
