@@ -7,7 +7,7 @@ const libraries = ["geometry", "marker"];
 const containerStyle = { width: "100%", height: "100%" };
 const center = { lat: -6.2, lng: 106.816666 };
 const MAP_ID = "2b8757efac2172e4321a3e69";
-const API_URL = "http://localhost:3001";
+const API_URL = import.meta.env.VITE_BACKEND_APPS;
 
 let newTrip = false;
 
