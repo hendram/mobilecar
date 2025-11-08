@@ -1,13 +1,11 @@
 /* Portrait-style full screen map (for mobile-like layout) */
+@media screen and (orientation: portrait) {
 .map-container {
   width: 100vw;
   height: 100vh;
-  max-width: 480px;     /* Simulate phone width */
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   background: #000;
-  border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
@@ -33,8 +31,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -43,15 +41,179 @@
 }
 
 .car-select-box {
-  background: white;
-  padding: 2rem;
-  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80vw;
+  height: 22vh; 
+  background-color: white;
+  border-radius: 0.8vh;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  color: #003366;
+      font-family: 'Segoe UI', sans-serif;
+    font-size: 2.5vh;
+  gap: 2vh;
 }
 
-.car-select-box select,
-.car-select-box button {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
+.carselect-tripbuttondiv {
+ display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  width: 78vw;  
+  height: 10vh;
+  gap: 1vw;
+}
+
+.car-select-button {
+ display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+border-radius: 0.8vh;
+background-color: #E0F7FA;
+color: #003366;
+width: 50vw;
+height: 6vh;
+   font-family: 'Segoe UI', sans-serif;
+    font-size: 2.5vh;
+}
+
+
+.car-select-option{
+background-color: #E0F7FA;
+color: #003366;
+   font-family: 'Segoe UI', sans-serif;
+    font-size: 2.5vh;
+}
+
+
+.starttripbutton{
+ display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 25vw;
+  height: 6vh;
+border-radius: 0.8vh;
+background-color: #E0F7FA;
+color: #003366;
+   font-family: 'Segoe UI', sans-serif;
+    font-size: 2.2vh;
+}
+
+}
+
+
+@media screen and (orientation: landscape) {
+.map-container-land {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+.map-container-land > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ddd;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 18px;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+}
+
+.car-select-overlay-land {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.car-select-box-land {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 68vw;
+  height: 28vh; 
+  background-color: white;
+  border-radius: 0.8vw;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  color: #003366;
+      font-family: 'Segoe UI', sans-serif;
+    font-size: 2.5vw;
+  gap: 2vh;
+}
+
+.carselect-tripbuttondiv-land {
+ display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  width: 67vw;  
+  height: 8vh;
+  gap: 1vw;
+}
+
+.car-select-button-land {
+ display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+border-radius: 0.5vw;
+background-color: #E0F7FA;
+color: #003366;
+width: 40vw;
+height: 7vh;
+   font-family: 'Segoe UI', sans-serif;
+    font-size: 2.5vw;
+}
+
+
+.car-select-option-land {
+background-color: #E0F7FA;
+color: #003366;
+   font-family: 'Segoe UI', sans-serif;
+    font-size: 2.5vw;
+}
+
+
+.starttripbutton-land {
+ display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 20vw;
+  height: 7vh;
+border-radius: 0.8vw;
+background-color: #E0F7FA;
+color: #003366;
+   font-family: 'Segoe UI', sans-serif;
+    font-size: 2.5vw;
+}
+
 }

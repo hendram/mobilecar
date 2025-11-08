@@ -4,7 +4,7 @@ import "./Map.css";
 import carIcon from "../assets/car.png";
 
 const libraries = ["geometry", "marker"];
-const containerStyle = { width: "100%", height: "100%" };
+const googlemap = { width: "100%", height: "100%" };
 const center = { lat: -6.2, lng: 106.816666 };
 const MAP_ID = "2b8757efac2172e4321a3e69";
 const API_URL = import.meta.env.VITE_BACKEND_APPS;
@@ -162,10 +162,10 @@ export default function Map() {
   if (!isLoaded) return <div className="loader">Loading map...</div>;
 
   return (
-    <div className="map-container">
+    <div className="map-container map-container-land">
       {/* Map underneath */}
       <GoogleMap
-        mapContainerStyle={containerStyle}
+        mapContainerClassName="googlemap"
         center={center}
         zoom={14}
         options={{ mapId: MAP_ID }}
@@ -174,22 +174,25 @@ export default function Map() {
 
       {/* Car selection overlay */}
       {showSelect && (
-        <div className="car-select-overlay">
-          <div className="car-select-box">
-            <h2>Select your car</h2>
+        <div className="car-select-overlay car-select-overlay-land">
+          <div className="car-select-box car-select-box-land">
+            <span>Select your car</span>
+            <div className="carselect-tripbuttondiv carselect-tripbuttondiv-land">
             <select
+              className="car-select-button car-select-button-land"
               value={selectedCar}
               onChange={(e) => setSelectedCar(e.target.value)}
             >
               <option value="">-- Choose a car --</option>
               {cars.map((c) => (
-                <option key={c.id} value={c.id}>
+                <option key={c.id} className="car-select-option car-select-option-land" value={c.id}>
                   {c.id}
                 </option>
               ))}
             </select>
-            <button onClick={handleStartTrip}>Start Trip</button>
-          </div>
+            <button className="starttripbutton starttripbutton-land" onClick={handleStartTrip}>Start Trip</button>
+         </div>   
+       </div>
         </div>
       )}
     </div>
