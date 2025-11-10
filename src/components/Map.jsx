@@ -17,6 +17,7 @@ export default function Map() {
     libraries,
   });
 
+
   const mapRef = useRef(null);
   const carRef = useRef(null);
   const [path, setPath] = useState([]);
@@ -112,6 +113,7 @@ export default function Map() {
       if (!start || !end) return;
 
       const startLatLng = new window.google.maps.LatLng(start.lat, start.lng);
+      console.log("startLatLng", startLatLng);
       const endLatLng = new window.google.maps.LatLng(end.lat, end.lng);
       const distance =
         window.google.maps.geometry.spherical.computeDistanceBetween(startLatLng, endLatLng);
