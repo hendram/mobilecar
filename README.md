@@ -6,11 +6,14 @@ This component is the core frontend simulator for vehicle movement visualization
 
 The Map component performs four major tasks:
 
-Step	Description
-1. Load Cars	Fetches available cars from the backend via /listcars.
-2. Select & Start Trip	User selects a car and triggers /startTrip. Session state is saved in sessionStorage.
-3. Fetch Route	Retrieves the car’s path (array of coordinates) using /getcarroute.
-4. Simulate Movement	Animates the car along the route, randomly changing speed or pausing, and reports current position to /carcurpos.
+| Step | Description |
+|------|-------------|
+| **1. Load Cars** | Fetches available cars from the backend via `/listcars`. |
+| **2. Select & Start Trip** | User selects a car and triggers `/startTrip`. Session state is saved in `sessionStorage`. |
+| **3. Fetch Route** | Retrieves the car’s path (array of coordinates) using `/getcarroute`. |
+| **4. Simulate Movement** | Animates the car along the route, randomly changing speed or pausing, and reports current position to `/carcurpos`. |
+
+
 ## 🧠 Internal Logic
 ## 🏁 1. Initialization
 ```bash
@@ -104,9 +107,10 @@ fetch(`${API_URL}/carcurpos`, {
 If the trip is new, newTrip = true, signaling the backend to create a new Firestore document.
 
 ## 🧩 Key Internal Functions
-Function	Purpose
-handleStartTrip()	Starts a new trip for the selected car and prevents duplicate starts.
-moveCar()	Animates the car marker across all route points with natural driving behavior.
-randomizeBehavior()	Randomly pauses or changes car speed to make movement realistic.
-fetch(.../getcarroute)	Loads car’s predefined route coordinates from the backend.
-fetch(.../carcurpos)	Periodically sends live car position and new trip signals to backend.
+| Function | Purpose |
+|-----------|----------|
+| `handleStartTrip()` | Starts a new trip for the selected car and prevents duplicate starts. |
+| `moveCar()` | Animates the car marker across all route points with natural driving behavior. |
+| `randomizeBehavior()` | Randomly pauses or changes car speed to make movement realistic. |
+| `fetch(.../getcarroute)` | Loads the car’s predefined route coordinates from the backend. |
+| `fetch(.../carcurpos)` | Periodically sends live car position and new trip signals to the backend. |
