@@ -105,56 +105,62 @@ export default function Map() {
     };
     randomizeBehavior();
 
-  const moveCar = () => {
-      const car = carRef.current;
-      if (!car || car.paused) return;
-      const start = car.path[car.index];
-      const end = car.path[car.index + 1] || car.path[0];
-      if (!start || !end) return;
+const moveCar = () => {
+  const car = carRef.current;
+  if (!car || car.paused) return;
 
-      const startLatLng = new window.google.maps.LatLng(start.lat, start.lng);
-      console.log("startLatLng", startLatLng);
-      const endLatLng = new window.google.maps.LatLng(end.lat, end.lng);
-      const distance =
-        window.google.maps.geometry.spherical.computeDistanceBetween(startLatLng, endLatLng);
+  const path = car.path;
+  if (path.length < 2) return;
 
-      const step = (car.speed || 2) / (distance || 1);
-      car.fraction += step;
-      if (car.fraction >= 1) {
-        car.fraction = 0;
-        car.index = (car.index + 1) % car.path.length;
-      }
+  const start = path[car.index];
+  const nextIndex = (car.index + 1) % path.length; // wrap around smoothly
+  const end = path[nextIndex];
 
-      const lat = start.lat + (end.lat - start.lat) * car.fraction;
-      const lng = start.lng + (end.lng - start.lng) * car.fraction;
-      const position = { lat, lng };
+  const startLatLng = new google.maps.LatLng(start.lat, start.lng);
+  const endLatLng = new google.maps.LatLng(end.lat, end.lng);
+  const distance = google.maps.geometry.spherical.computeDistanceBetween(startLatLng, endLatLng);
 
-      const heading =
-        window.google.maps.geometry.spherical.computeHeading(startLatLng, endLatLng) + 90;
+  // Normalize step (speed relative to distance)
+  const step = Math.min((car.speed || 2) / (distance || 1), 1);
+  car.fraction = Math.min(car.fraction + step, 1);
 
-      car.marker.position = position;
-      car.carEl.style.transform = `translate(-50%, -50%) rotate(${heading}deg)`;
+  // Compute intermediate position
+  const lat = start.lat + (end.lat - start.lat) * car.fraction;
+  const lng = start.lng + (end.lng - start.lng) * car.fraction;
+  const position = { lat, lng };
 
-      const carId = sessionStorage.getItem("selectedCarId");
-      const tripcurpos = `tripCurpos_${carId}`;
-      if (!sessionStorage.getItem("tripcurpos")) {
-        newTrip = true;
-        sessionStorage.setItem("tripcurpos", "true");
-        console.log("🆕 New trip started — will create new Firestore collection");
-      } else newTrip = false;
+  // Heading angle (rotate car)
+  const heading = google.maps.geometry.spherical.computeHeading(startLatLng, endLatLng) + 90;
+  car.marker.position = position;
+  car.carEl.style.transform = `translate(-50%, -50%) rotate(${heading}deg)`;
 
-      const now = Date.now();
-      const shouldSendNow = !car.lastSent || now - car.lastSent > 5000;
-      if (shouldSendNow) {
-        car.lastSent = now;
-        fetch(`${API_URL}/carcurpos`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ carId, lat, lng, newTrip }),
-        }).catch(() => {});
-        newTrip = false;
-      }
-    };
+  // If finished this segment, go to next one
+  if (car.fraction >= 1) {
+    car.fraction = 0;
+    car.index = nextIndex;
+  }
+
+  // --- Handle sending position to backend ---
+  const carId = sessionStorage.getItem("selectedCarId");
+  const tripcurpos = `tripCurpos_${carId}`;
+  if (!sessionStorage.getItem(tripcurpos)) {
+    newTrip = true;
+    sessionStorage.setItem(tripcurpos, "true");
+    console.log("🆕 New trip started — will create new Firestore collection");
+  } else newTrip = false;
+
+  const now = Date.now();
+  const shouldSendNow = !car.lastSent || now - car.lastSent > 5000;
+  if (shouldSendNow) {
+    car.lastSent = now;
+    fetch(`${API_URL}/carcurpos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ carId, lat, lng, newTrip }),
+    }).catch(() => {});
+    newTrip = false;
+  }
+};
 
 
     const interval = setInterval(moveCar, 200);
