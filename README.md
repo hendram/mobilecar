@@ -26,13 +26,15 @@ const { isLoaded } = useJsApiLoader({
 Loads Google Maps libraries (geometry for distance/heading computation, marker for custom icons).
 
 ## 🚗 2. Car Loading
+
+```bash
 useEffect(() => {
   fetch(`${API_URL}/listcars`)
     .then(res => res.json())
     .then(setCars)
     .catch(console.error);
 }, []);
-
+```
 
 Fetches available cars from the backend and populates the dropdown menu.
 
@@ -56,6 +58,7 @@ Starts a new trip via /startTrip API.
 Prevents duplicate trip creation by tracking tripStarted_<carId>.
 
 ## 🧭 4. Route Fetching
+
 ```bash
 fetch(`${API_URL}/getcarroute?carId=${selectedCar}`)
   .then(res => res.json())
@@ -73,6 +76,7 @@ Example response:
 ```
 
 ## 🔄 5. Car Animation & Behavior
+
 ```bash
 const moveCar = () => {
   const start = path[car.index];
@@ -107,6 +111,7 @@ fetch(`${API_URL}/carcurpos`, {
 If the trip is new, newTrip = true, signaling the backend to create a new Firestore document.
 
 ## 🧩 Key Internal Functions
+
 | Function | Purpose |
 |-----------|----------|
 | `handleStartTrip()` | Starts a new trip for the selected car and prevents duplicate starts. |
@@ -114,3 +119,5 @@ If the trip is new, newTrip = true, signaling the backend to create a new Firest
 | `randomizeBehavior()` | Randomly pauses or changes car speed to make movement realistic. |
 | `fetch(.../getcarroute)` | Loads the car’s predefined route coordinates from the backend. |
 | `fetch(.../carcurpos)` | Periodically sends live car position and new trip signals to the backend. |
+
+![Workflow Diagram](MobileCarDiagram.png)
